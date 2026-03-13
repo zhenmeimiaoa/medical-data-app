@@ -2,13 +2,25 @@ name: Build Android APK
 on: [push, pull_request, workflow_dispatch]
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04  # 使用更稳定的Ubuntu版本
     steps:
       - uses: actions/checkout@v3
-      - name: Build APK with Docker
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
         run: |
-          # 使用预配置的Buildozer Docker镜像
-          docker run --rm -v $(pwd):/app -w /app kivy/buildozer:master buildozer android debug
+          sudo apt-get update
+          sudo apt-get install -y python3-pip build-essential git curl unzip openjdk-8-jdk
+      - name: Install Buildozer
+        run: pip install buildozer==1.5.0 cython==3.0.8
+      - name: Build APK
+        run: |
+          # 设置构建环境
+          export ANDROID_SDK_HOME=~/Android/Sdk
+          # 运行构建
+          buildozer android debug
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
