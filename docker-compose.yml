@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  buildozer:
+    build: .
+    image: kivy/buildozer:latest
+    container_name: kivy-buildozer
+    volumes:
+      - .:/app
+      - ./bin:/app/bin
+    command: buildozer android debug
+    environment:
+      - BUILDOZER_WARN_ON_ROOT=0
